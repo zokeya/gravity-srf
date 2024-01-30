@@ -21,8 +21,8 @@ def get_user_roles(
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.UserRole)
 def create_user_role(
   user_role: schemas.UserRoleBase,
-  db: Session = Depends(get_db)
-  # ,current_user: schemas.User = Depends(oauth2.get_current_user)
+  db: Session = Depends(get_db),
+  admin_user: schemas.User = Depends(oauth2.get_current_adminuser)
   ):
 
   db_user_role = utils.get_user_role_by_name(db, rolename=user_role.name)
@@ -37,7 +37,11 @@ def create_user_role(
   return new_user_role
 
 @router.get("/{id}")
-async def get_userole(id: int, db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
+async def get_userole(
+    id: int,
+    db: Session = Depends(get_db),
+    admin_user: schemas.User = Depends(oauth2.get_current_adminuser)
+  ):
   urole = db.query(models.UserRole).filter(models.UserRole.id == id).first()
   if not urole:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -46,7 +50,11 @@ async def get_userole(id: int, db: Session = Depends(get_db), current_user: sche
   return {"data" : urole}
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user_role(id: int, db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
+def delete_user_role(
+    id: int,
+    db: Session = Depends(get_db),
+    admin_user: schemas.User = Depends(oauth2.get_current_adminuser)
+  ):
   userRole = db.query(models.UserRole).filter(models.UserRole.id == id)
 
   if userRole.first() == None:
@@ -58,7 +66,12 @@ def delete_user_role(id: int, db: Session = Depends(get_db), current_user: schem
   return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.put("/{id}")
-def update_user_role(id: int, updated_urole: schemas.UserRoleBase, db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
+def update_user_role(
+    id: int,
+    updated_urole: schemas.UserRoleBase,
+    db: Session = Depends(get_db),
+    admin_user: schemas.User = Depends(oauth2.get_current_adminuser)
+  ):
   urole_query = db.query(models.UserRole).filter(models.UserRole.id == id)
 
   ticket = urole_query.first()

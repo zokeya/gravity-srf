@@ -24,7 +24,12 @@ def create_user(
 
 
 @router.get("/", response_model=list[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_users(
+        skip: int = 0,
+        limit: int = 100,
+        db: Session = Depends(get_db),
+        admin_user: schemas.User = Depends(oauth2.get_current_adminuser)
+    ):
     users = utils.get_users(db, skip=skip, limit=limit)
     return users
 
@@ -94,7 +99,11 @@ def reset_pwd_admin(
 
 
 @router.get("/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
+def read_user(
+        user_id: int,
+        db: Session = Depends(get_db),
+        admin_user: schemas.User = Depends(oauth2.get_current_adminuser)
+    ):
     db_user = utils.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -109,7 +118,12 @@ def create_ticket_for_user(
 
 
 @router.put("/{id}")
-def update_user(id: int, updated_user: schemas.UserCreate, db: Session = Depends(get_db)):
+def update_user(
+        id: int,
+        updated_user: schemas.UserCreate,
+        db: Session = Depends(get_db),
+        admin_user: schemas.User = Depends(oauth2.get_current_adminuser)
+    ):
   user_query = db.query(models.User).filter(models.User.id == id)
 
   user = user_query.first()
