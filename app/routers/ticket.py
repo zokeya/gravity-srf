@@ -11,19 +11,20 @@ router = APIRouter(
 
 @router.get("/", response_model=list[schemas.Ticket])
 def read_tickets(
-  skip: int = 0,
-  limit: int = 100,
-  db: Session = Depends(get_db),
-  current_user: schemas.User = Depends(oauth2.get_current_user)):
-    tickets = utils.get_tickets(db, skip=skip, limit=limit)
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(oauth2.get_current_user)
+  ):
+    tickets = utils.get_tickets(db, skip=skip, limit=limit, current_user=current_user)
     return tickets
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Ticket)
 def create_ticket(
-  ticket: schemas.TicketCreate,
-  db: Session = Depends(get_db),
-  current_user: schemas.User = Depends(oauth2.get_current_user)
+    ticket: schemas.TicketCreate,
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(oauth2.get_current_user)
   ):
 
   new_ticket = models.Ticket(consultant_id=current_user.id, **ticket.dict())

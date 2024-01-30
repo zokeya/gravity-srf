@@ -61,8 +61,14 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def get_tickets(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Ticket).offset(skip).limit(limit).all()
+def get_tickets(db: Session, skip: int = 0, limit: int = 100, current_user: schemas.User = None):
+    # Build the base query without any filters
+    tickets_query = db.query(models.Ticket)
+
+    if current_user and current_user.user_role_id != 1:
+        tickets_query = tickets_query.filter(models.Ticket.consultant_id == current_user.id)
+
+    return tickets_query.offset(skip).limit(limit).all()
 
 
 def create_user_ticket(db: Session, ticket: schemas.TicketCreate, user_id: int):
