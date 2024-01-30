@@ -8,9 +8,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from email.utils import formatdate
 
-import schedule
-import time
-
 from . import schemas, models,database, utils
 
 def get_smtp_credentials(db: Session = Depends(database.get_db)):
@@ -79,10 +76,3 @@ def send_unsent_emails():
             db.commit()
         except Exception as e:
             logging.error(f"Error in sending pending mails: {e}")
-
-
-# schedule.every(10).seconds.do(send_unsent_emails)
-
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)

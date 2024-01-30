@@ -29,7 +29,7 @@ class Ticket(TicketBase):
     consultant_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserBase(BaseModel):
     email: str
