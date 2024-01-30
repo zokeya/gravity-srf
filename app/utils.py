@@ -56,7 +56,7 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
 
-    body = f'Hello {db_user.name},\nYour details have been successfully created in the Job Card Portal.\n\nTo login, use the following credentials.\nUsername : {db_user.email}\nPassword : {db_user.password}\n\nFor any inquiries, please consult the support desk.\n\nBest regards,\nThe Support Team'
+    body = f'Hello {db_user.name},\nYour details have been successfully created in the Job Card Portal.\n\nTo login, use the following credentials.\nUsername : {db_user.email}\nPassword : {password_gen}\n\nFor any inquiries, please consult the support desk.\n\nBest regards,\nThe Support Team'
     save_email_to_db("Password Change Notification", body, db_user.email)
     return db_user
 
@@ -71,9 +71,6 @@ def create_user_ticket(db: Session, ticket: schemas.TicketCreate, user_id: int):
     db.commit()
     db.refresh(db_ticket)
     return db_ticket
-
-def get_posts(db: Session, skip: int=0, limit:int=100):
-    return db.query(models.Post).offset(skip).limit(limit).all()
 
 def get_user_roles(db: Session, skip: int=0, limit:int=100):
     return db.query(models.UserRole).offset(skip).limit(limit).all()

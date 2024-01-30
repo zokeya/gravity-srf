@@ -2,25 +2,6 @@ from pydantic import BaseModel
 from pydantic.types import conint
 from datetime import datetime
 
-
-class PostBase(BaseModel):
-    title: str
-    content: str | None = None
-    published : bool = True
-  # rating : Optional[int] = None
-
-class PostCreate(PostBase):
-    pass
-
-class Post(PostBase):
-    id: int
-    created_at: datetime
-    user_id: int
-
-    class Config:
-        orm_mode = True
-
-
 class TicketBase(BaseModel):
     # description: str | None = None
     company_name: str
@@ -111,7 +92,3 @@ class MailConfig(BaseModel):
     smtp_password: str
     sender_email: str
     is_active: bool
-
-class Vote(BaseModel):
-    post_id: int
-    dir: conint(le=1)

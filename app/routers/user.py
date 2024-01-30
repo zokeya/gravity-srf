@@ -12,7 +12,11 @@ router = APIRouter(
 
 
 @router.post("/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def create_user(
+        user: schemas.UserCreate,
+        db: Session = Depends(get_db),
+        admin_user: schemas.User = Depends(oauth2.get_current_adminuser)
+    ):
     db_user = utils.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -43,7 +47,7 @@ def reset_pwd_login_user(
   current_user.password = hashed_password
   db.commit()
 
-  body = f'Hello {current_user.name},Your password has been changed successfully.\n\n Your new Password is; {current_user.password}\n\nFor any inquiries, please consult the support desk.\nBest regards,\nThe Support Team'
+  body = f'Hello {current_user.name},Your password has been changed successfully.\n\n Your new Password is; {login_user.newpassword}\n\nFor any inquiries, please consult the support desk.\nBest regards,\nThe Support Team'
   utils.save_email_to_db("Password Change Notification", body, current_user.email)
 
   return current_user
@@ -70,15 +74,15 @@ def reset_pwd_admin(
             password_gen = utils.generate_pwd_from_email(db_user.email)
             hashed_password = utils.hash(password_gen)
             db_user.password = hashed_password
+            body = f'Hello {db_user.name},\nYour password has been changed successfully.\n\n Your new Password is; {password_gen}\n\nFor any inquiries, please consult the support desk.\n\nBest regards,\nThe Support Team'
         else:
             # If a new password is provided, hash and update the user's password
             hashed_password = utils.hash(user_data.password)
             db_user.password = hashed_password
+            body = f'Hello {db_user.name},\nYour password has been changed successfully.\n\n Your new Password is; {user_data.password}\n\nFor any inquiries, please consult the support desk.\n\nBest regards,\nThe Support Team'
 
         # Commit the changes to the database
         db.commit()
-
-        body = f'Hello {db_user.name},\nYour password has been changed successfully.\n\n Your new Password is; {db_user.password}\n\nFor any inquiries, please consult the support desk.\n\nBest regards,\nThe Support Team'
         utils.save_email_to_db("Password Change Notification", body, db_user.email)
 
         # Return the updated user information

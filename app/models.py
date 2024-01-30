@@ -5,18 +5,6 @@ import datetime
 
 from .database import Base
 
-class Post(Base):
-    __tablename__ = "posts"
-
-    id = Column(Integer, primary_key=True, nullable=False, index=True)
-    title = Column(String, nullable=False)
-    content = Column(String, nullable=False)
-    published = Column(Boolean, default=True, nullable=False)
-    created_at = Column(DateTime(timezone=False), nullable=False, default=datetime.datetime.now())
-    user_id = Column(Integer, ForeignKey("users.id"))
-
-    user = relationship("User", back_populates="posts")
-
 class UserRole(Base):
     __tablename__ = "user_roles"
 
@@ -38,7 +26,6 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)
 
     tickets = relationship("Ticket", back_populates="user")
-    posts = relationship("Post", back_populates="user")
 
     user_role = relationship("UserRole", back_populates="users")
 
@@ -89,9 +76,3 @@ class EmailConfig(Base):
     smtp_password = Column(String)
     sender_email = Column(String)
     is_active = Column(Boolean, default=True)
-
-class Vote(Base):
-    __tablename__ = "votes"
-
-    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)

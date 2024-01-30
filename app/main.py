@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from . import models, schemas, utils, mailer
 from .database import engine
-from .routers import user_role,auth,post, user, ticket, mail_config, vote
+from .routers import user_role,auth, user, ticket, mail_config
 
 # models.Base.metadata.create_all(bind=engine)
 
@@ -26,9 +26,7 @@ app.include_router(auth.router)
 app.include_router(user_role.router)
 app.include_router(user.router)
 app.include_router(ticket.router)
-app.include_router(post.router)
 app.include_router(mail_config.router)
-app.include_router(vote.router)
 
 @app.get("/")
 async def root():
