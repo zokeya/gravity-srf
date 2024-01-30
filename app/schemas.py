@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, condecimal
 from pydantic.types import conint
 from datetime import datetime
 
@@ -15,9 +15,9 @@ class TicketBase(BaseModel):
     problem_reported: str
     diagnosis: str
     solution_provided: str
-    total_hrs: str
+    total_hrs: condecimal(max_digits=10, decimal_places=2)
     chargeable: bool
-    amount: str
+    amount: float
 
 
 class TicketCreate(TicketBase):
